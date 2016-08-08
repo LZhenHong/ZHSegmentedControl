@@ -25,6 +25,7 @@
     segmentedControl0.indicatorStyle = ZHSegmentedControlIndicatorStyleArrow;
     segmentedControl0.selectionIndicatorColor = [UIColor colorWithRed:0.90 green:0.32 blue:0.27 alpha:1.00];
     [self.view addSubview:segmentedControl0];
+    [segmentedControl0 addTarget:self action:@selector(segmentedControlClicked:) forControlEvents:UIControlEventValueChanged];
     
     NSArray<NSString *> *titles = @[@"Today", @"Long", @"Wanted"];
     ZHSegmentedControl *segmentedControl1 = [[ZHSegmentedControl alloc] initWithSectionTitles:titles];
@@ -33,6 +34,7 @@
     segmentedControl1.indicatorPosition = ZHSegmentedControlIndicatorPositionTop;
     segmentedControl1.selectionIndicatorColor = [UIColor colorWithRed:0.90 green:0.32 blue:0.27 alpha:1.00];
     [self.view addSubview:segmentedControl1];
+    [segmentedControl1 addTarget:self action:@selector(segmentedControlClicked:) forControlEvents:UIControlEventValueChanged];
     
     ZHSegmentedControl *segmentedControl2 = [[ZHSegmentedControl alloc] initWithSectionTitles:titles];
     segmentedControl2.frame = CGRectMake(0.0, 300.0, self.view.bounds.size.width, 60.0);
@@ -45,6 +47,7 @@
                            };
     segmentedControl2.titleTextAttributes = attr2;
     [self.view addSubview:segmentedControl2];
+    [segmentedControl2 addTarget:self action:@selector(segmentedControlClicked:) forControlEvents:UIControlEventValueChanged];
     
     ZHSegmentedControl *segmentedControl3 = [[ZHSegmentedControl alloc] initWithSectionTitles:titles];
     segmentedControl3.frame = CGRectMake(0.0, 400.0, self.view.bounds.size.width, 60.0);
@@ -61,11 +64,16 @@
     segmentedControl3.selectionIndicatorColor = [UIColor colorWithRed:0.90 green:0.32 blue:0.27 alpha:1.00];
     segmentedControl3.selectionIndicatorHeight = 3.0;
     [self.view addSubview:segmentedControl3];
+    [segmentedControl3 addTarget:self action:@selector(segmentedControlClicked:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)segmentedControlClicked:(ZHSegmentedControl *)sender {
+    NSLog(@"Index %ld selected - %@", sender.selectedSegmentIndex, sender);
 }
 
 @end
