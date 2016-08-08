@@ -388,7 +388,7 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
     return segmentWidth;
 }
 
-// Stole from HMSegmentedControl https://github.com/HeshamMegid/HMSegmentedControl/blob/master/HMSegmentedControl/HMSegmentedControl.m#L860
+// Steal from HMSegmentedControl https://github.com/HeshamMegid/HMSegmentedControl/blob/master/HMSegmentedControl/HMSegmentedControl.m#L860
 - (CGSize)measureTitleAtIndex:(NSUInteger)index {
     id title = self.sectionTitles[index];
     CGSize size = CGSizeZero;
