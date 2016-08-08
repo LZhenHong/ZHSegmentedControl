@@ -144,6 +144,7 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
     _selectionBoxColor = [UIColor clearColor];
     _indicatorPosition = ZHSegmentedControlIndicatorPositionBottom;
     _borderStyle = ZHSegmentedControlBorderStyleNone;
+    _indicatorStyle = ZHSegmentedControlIndicatorStyleDefault;
     _borderColor = [UIColor blackColor];
     _borderWidth = 1.0f;
     

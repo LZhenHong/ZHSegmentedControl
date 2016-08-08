@@ -22,7 +22,7 @@ typedef NS_OPTIONS(NSUInteger, ZHSegmentedControlBorderStyle) {
 };
 
 typedef NS_ENUM(NSUInteger, ZHSegmentedControlIndicatorStyle) {
-    ZHSegmentedControlIndicatorStylDefault,
+    ZHSegmentedControlIndicatorStyleDefault,
     ZHSegmentedControlIndicatorStyleArrow,
     ZHSegmentedControlIndicatorStyleFlood // Not implement now!!!
 };
