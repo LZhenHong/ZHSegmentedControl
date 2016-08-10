@@ -433,12 +433,6 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
         return (NSAttributedString *)title;
     } else {
         NSDictionary *titleAttrs = selected ? [self resultingSelectedTitleTextAttributes] : [self resultingTitleTextAttributes];
-        UIColor *titleColor = titleAttrs[NSForegroundColorAttributeName];
-        if (titleColor) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:titleAttrs];
-            dict[NSForegroundColorAttributeName] = titleColor;
-            titleAttrs = [NSDictionary dictionaryWithDictionary:dict];
-        }
         return [[NSAttributedString alloc] initWithString:(NSString *)title attributes:titleAttrs];
     }
 }
