@@ -364,6 +364,7 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 }
 
 - (void)setSelectedSegmentIndex:(NSInteger)selectedSegmentIndex animated:(BOOL)animated {
+    NSParameterAssert(selectedSegmentIndex <= self.numbersOfSegments);
     if (_selectedSegmentIndex == selectedSegmentIndex) { return; }
     
     _selectedSegmentIndex = selectedSegmentIndex;
