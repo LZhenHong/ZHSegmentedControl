@@ -62,7 +62,7 @@ typedef NS_ENUM(NSUInteger, ZHSegmentedControlType) {
 @end
 
 @interface ZHSegmentedControlIndicatorView : UIView
-@property (nonatomic, assign) NSInteger index;
+@property (nonatomic, readonly) NSInteger index;
 @property (nonatomic, readonly) NSInteger totalCount;
 @property (nonatomic, readonly) ZHSegmentedControlIndicatorPosition indicatorPosition;
 @property (nonatomic, readonly) ZHSegmentedControlIndicatorStyle indicatorStyle;
@@ -78,6 +78,7 @@ typedef NS_ENUM(NSUInteger, ZHSegmentedControlType) {
 @property (nonatomic, strong) CAShapeLayer *backgroundLayer;
 @end
 static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
+static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
 @implementation ZHSegmentedControlIndicatorView {
     BOOL _first;
 }
@@ -88,6 +89,7 @@ static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
         _indicatorPosition = position;
         _indicatorHeight = height;
         _totalCount = count;
+        _index = 0;
         _first = YES;
         self.backgroundColor = [UIColor clearColor];
     }
@@ -113,7 +115,8 @@ static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
             self.indicatorLayer = [self boxLayer];
             break;
         }
-        case ZHSegmentedControlIndicatorStyleFlood: {
+        case ZHSegmentedControlIndicatorStyleFlood:
+        case ZHSegmentedControlIndicatorStyleFloodHollow: {
             self.backgroundLayer = [self backgroundLayer];
             self.backgroundLayer.contentsScale = [UIScreen mainScreen].scale;
             [self.layer addSublayer:self.backgroundLayer];
@@ -140,6 +143,16 @@ static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
     _indicatorStyle = indicatorStyle;
     _first = YES;
     [self setNeedsDisplay];
+}
+
+- (void)setIndicatorPosition:(ZHSegmentedControlIndicatorPosition)indicatorPosition {
+    _indicatorPosition = indicatorPosition;
+    
+    if (self.indicatorStyle == ZHSegmentedControlIndicatorStyleDefault ||
+        self.indicatorStyle == ZHSegmentedControlIndicatorStyleArrow) {
+        // Tigger this method to reset the indicatorLayer's frame.
+        [self setSelectedIndex:_index animated:NO];
+    }
 }
 
 - (void)setBoxColor:(UIColor *)boxColor {
@@ -209,8 +222,14 @@ static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
     
     CAShapeLayer *layer = [CAShapeLayer layer];
     layer.path = path.CGPath;
-    UIColor *fillColor = self.selectedBoxColor ? self.selectedBoxColor : self.indicatorColor;
-    layer.fillColor = fillColor.CGColor;
+    UIColor *color = self.selectedBoxColor ? self.selectedBoxColor : self.indicatorColor;
+    if (self.indicatorStyle == ZHSegmentedControlIndicatorStyleFlood) {
+        layer.fillColor = color.CGColor;
+    } else if(self.indicatorStyle == ZHSegmentedControlIndicatorStyleFloodHollow) {
+        path.lineWidth = kZHSegmentedControlIndicatorMargin;
+        layer.strokeColor = color.CGColor;
+        layer.fillColor = [UIColor clearColor].CGColor;
+    }
     layer.frame = rect;
     
     return layer;
@@ -218,14 +237,14 @@ static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
 
 - (CAShapeLayer *)backgroundLayer {
     UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.bounds
-                                                        cornerRadius:self.bounds.size.height * 0.5];
-    path.lineWidth = 3.0;
+                                                    cornerRadius:self.bounds.size.height * 0.5];
     [path addClip];
     
     CAShapeLayer *layer = [CAShapeLayer layer];
     layer.path = path.CGPath;
-    UIColor *strokeColor = self.boxColor ? self.boxColor : self.indicatorColor;
-    layer.fillColor = strokeColor.CGColor;
+    UIColor *fillColor = self.boxColor ? self.boxColor : self.indicatorColor;
+    layer.fillColor = fillColor.CGColor;
+    layer.frame = self.bounds;
     
     return layer;
 }
@@ -249,12 +268,19 @@ static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
             y = self.indicatorPosition == ZHSegmentedControlIndicatorPositionTop ? 0.0 : self.bounds.size.height - h;
             break;
         }
-        case ZHSegmentedControlIndicatorStyleBox:
-        case ZHSegmentedControlIndicatorStyleFlood: {
+        case ZHSegmentedControlIndicatorStyleBox: {
             w = eachW;
             h = self.bounds.size.height;
             x = self.index * w;
             y = 0.0;
+            break;
+        }
+        case ZHSegmentedControlIndicatorStyleFlood:
+        case ZHSegmentedControlIndicatorStyleFloodHollow: {
+            w = eachW - 2 * kZHSegmentedControlIndicatorMargin;
+            h = self.bounds.size.height - 2 * kZHSegmentedControlIndicatorMargin;
+            x = self.index * eachW + kZHSegmentedControlIndicatorMargin;
+            y = kZHSegmentedControlIndicatorMargin;
             break;
         }
     }
@@ -406,7 +432,8 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
     if ([self.kvoProperties containsObject:keyPath]) {
         id oldValue = [change valueForKey:NSKeyValueChangeOldKey];
         if ([self respondsToSelector:selector] && newValue != nil) {
-            if ([keyPath isEqualToString:@"titles"] && ![oldValue isMemberOfClass:[NSNull class]]) {
+            if (([keyPath isEqualToString:@"titles"] || [keyPath isEqualToString:@"images"] ||
+                 [keyPath isEqualToString:@"selectedImages"]) && ![oldValue isMemberOfClass:[NSNull class]]) {
                 _first = !([newValue count] == [oldValue count]);
             }
             [self setNeedsLayout];
@@ -489,21 +516,22 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
                 [self.scrollView addSubview:self.indicatorView];
             }
             
-            CGFloat segmentWidth = [self maxSegmentWidth];
-            CGFloat height = self.bounds.size.height;
+            CGFloat x = 0.0f;
             CGFloat y = 0.0f;
+            CGFloat w = [self maxSegmentWidth];
+            CGFloat h = self.bounds.size.height;
             for (int i = 0; i < self.numbersOfSegments; ++i) {
-                CGFloat x = i * segmentWidth;
+                x = i * w;
                 ZHSegmentedButton *btn = [[ZHSegmentedButton alloc] init];
                 btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
                 btn.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
                 [btn addTarget:self action:@selector(segmentButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-                btn.frame = CGRectMake(x, y, segmentWidth, height);
+                btn.frame = CGRectMake(x, y, w, h);
                 [self.scrollView addSubview:btn];
                 [self.buttons addObject:btn];
             }
-            self.scrollView.frame = CGRectMake(0.0, 0.0, self.bounds.size.width, height);
-            self.scrollView.contentSize = CGSizeMake(self.buttons.count * segmentWidth, height);
+            self.scrollView.frame = CGRectMake(0.0, 0.0, self.bounds.size.width, h);
+            self.scrollView.contentSize = CGSizeMake(self.buttons.count * w, h);
             self.indicatorView.frame = (CGRect){CGPointZero, self.scrollView.contentSize};
         }
         _first = NO;
@@ -517,7 +545,6 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 
 - (void)p_setupSubviews {
     [self.buttons enumerateObjectsUsingBlock:^(ZHSegmentedButton *btn, NSUInteger idx, BOOL * _Nonnull stop) {
-        [btn resetButtonBorders];
         if (self.type == ZHSegmentedControlTypeText) {
             [btn setAttributedTitle:[self attributedTitleAtIndex:idx selected:NO] forState:UIControlStateNormal];
             [btn setAttributedTitle:[self attributedTitleAtIndex:idx selected:YES] forState:UIControlStateSelected];
