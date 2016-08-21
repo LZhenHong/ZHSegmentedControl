@@ -64,9 +64,15 @@ typedef NS_ENUM(NSUInteger, ZHSegmentedControlIndicatorStyle) {
      */
     ZHSegmentedControlIndicatorStyleBox,
     /**
-     *  Same with above.
+     *  For my poor English. It's hard to explain this style. Go to the example to see the effect.
+     *  Use `boxColor` and `selectedBoxColor` to control this style.
      */
-    ZHSegmentedControlIndicatorStyleFlood
+    ZHSegmentedControlIndicatorStyleFlood,
+    /**
+     *  For my poor English. It's hard to explain this style. Go to the example to see the effect.
+     *  Use `boxColor` and `selectedBoxColor` to control this style.
+     */
+    ZHSegmentedControlIndicatorStyleFloodHollow
 };
 
 
