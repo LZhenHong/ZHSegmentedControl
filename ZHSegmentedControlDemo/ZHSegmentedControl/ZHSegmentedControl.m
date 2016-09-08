@@ -227,6 +227,7 @@ static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
         layer.fillColor = color.CGColor;
     } else if(self.indicatorStyle == ZHSegmentedControlIndicatorStyleFloodHollow) {
         path.lineWidth = kZHSegmentedControlIndicatorMargin;
+        layer.lineWidth = path.lineWidth;
         layer.strokeColor = color.CGColor;
         layer.fillColor = [UIColor clearColor].CGColor;
     }
@@ -587,8 +588,11 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 }
 
 - (void)setSelectedSegmentIndex:(NSInteger)selectedSegmentIndex animated:(BOOL)animated {
-    NSParameterAssert(selectedSegmentIndex <= self.numbersOfSegments);
-    if (_selectedSegmentIndex == selectedSegmentIndex) { return; }
+#if DEBUG
+    NSParameterAssert(selectedSegmentIndex < self.numbersOfSegments && selectedSegmentIndex >= 0);
+#elif
+    if (selectedSegmentIndex >= self.numbersOfSegments || selectedSegmentIndex < 0) { return; }
+#endif
     
     _selectedSegmentIndex = selectedSegmentIndex;
     _animated = animated;
