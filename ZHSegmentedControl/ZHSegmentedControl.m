@@ -131,11 +131,11 @@ static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
 - (void)setSelectedIndex:(NSInteger)index animated:(BOOL)animated {
     _index = index;
     // layer 会有隐式动画
-//    if (!animated) {
-//        [self.indicatorLayers[0] removeAllAnimations];
-//    } else {
-//        [self.indicatorLayers[0] ]
-//    }
+    //    if (!animated) {
+    //        [self.indicatorLayers[0] removeAllAnimations];
+    //    } else {
+    //        [self.indicatorLayers[0] ]
+    //    }
     self.indicatorLayer.frame = [self indicatorFrame];
 }
 
@@ -178,7 +178,7 @@ static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
 - (CAShapeLayer *)arrowLayer {
     UIBezierPath *path = [UIBezierPath bezierPath];
     CGFloat height = self.indicatorHeight < kZHSegmentedControlArrowIndicatorDefaultHeight ?
-                                            kZHSegmentedControlArrowIndicatorDefaultHeight : self.indicatorHeight;
+    kZHSegmentedControlArrowIndicatorDefaultHeight : self.indicatorHeight;
     CGPoint p1 = CGPointZero;
     CGPoint p2 = CGPointMake(2 * height, 0.0);;
     CGPoint p3 = CGPointZero;
@@ -263,7 +263,7 @@ static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
         }
         case ZHSegmentedControlIndicatorStyleArrow: {
             h = self.indicatorHeight < kZHSegmentedControlArrowIndicatorDefaultHeight ?
-                                       kZHSegmentedControlArrowIndicatorDefaultHeight : self.indicatorHeight;
+            kZHSegmentedControlArrowIndicatorDefaultHeight : self.indicatorHeight;
             w = 2 * h;
             x = eachW * (0.5 + self.index) - h;
             y = self.indicatorPosition == ZHSegmentedControlIndicatorPositionTop ? 0.0 : self.bounds.size.height - h;
@@ -393,22 +393,22 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 
 - (void)p_setupKVOObserver {
     _indicatorKVOProperties = [NSSet setWithObjects:NSStringFromSelector(@selector(indicatorPosition)),
-                                                    NSStringFromSelector(@selector(indicatorStyle)),
-                                                    NSStringFromSelector(@selector(indicatorHeight)),
-                                                    NSStringFromSelector(@selector(indicatorColor)),
-                                                    NSStringFromSelector(@selector(boxColor)),
-                                                    NSStringFromSelector(@selector(selectedBoxColor)),
-                                                    nil];
+                               NSStringFromSelector(@selector(indicatorStyle)),
+                               NSStringFromSelector(@selector(indicatorHeight)),
+                               NSStringFromSelector(@selector(indicatorColor)),
+                               NSStringFromSelector(@selector(boxColor)),
+                               NSStringFromSelector(@selector(selectedBoxColor)),
+                               nil];
     _borderKVOProperties = [NSSet setWithObjects:NSStringFromSelector(@selector(borderStyle)),
-                                                 NSStringFromSelector(@selector(borderColor)),
-                                                 NSStringFromSelector(@selector(borderWidth)),
-                                                 nil];
+                            NSStringFromSelector(@selector(borderColor)),
+                            NSStringFromSelector(@selector(borderWidth)),
+                            nil];
     _kvoProperties = [NSSet setWithObjects:NSStringFromSelector(@selector(titles)),
-                                           NSStringFromSelector(@selector(titleTextAttributes)),
-                                           NSStringFromSelector(@selector(selectedTitleTextAttributes)),
-                                           NSStringFromSelector(@selector(images)),
-                                           NSStringFromSelector(@selector(selectedImages)),
-                                           nil];
+                      NSStringFromSelector(@selector(titleTextAttributes)),
+                      NSStringFromSelector(@selector(selectedTitleTextAttributes)),
+                      NSStringFromSelector(@selector(images)),
+                      NSStringFromSelector(@selector(selectedImages)),
+                      nil];
     [_indicatorKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self addObserver:self forKeyPath:obj options:NSKeyValueObservingOptionNew context:ZHSegmentedControlObserverContext];
@@ -454,24 +454,24 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 }
 
 - (void)dealloc {
-    [self.indicatorKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+    [_indicatorKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self removeObserver:self forKeyPath:obj context:ZHSegmentedControlObserverContext];
         }
     }];
-    [self.borderKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+    [_borderKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self removeObserver:self forKeyPath:obj context:ZHSegmentedControlObserverContext];
         }
     }];
-    [self.kvoProperties enumerateObjectsUsingBlock:^(NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
+    [_kvoProperties enumerateObjectsUsingBlock:^(NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self removeObserver:self forKeyPath:obj context:ZHSegmentedControlObserverContext];
         }
     }];
-    self.indicatorKVOProperties = nil;
-    self.borderKVOProperties = nil;
-    self.kvoProperties = nil;
+    _indicatorKVOProperties = nil;
+    _borderKVOProperties = nil;
+    _kvoProperties = nil;
 }
 
 - (ZHSegmentedControlType)type {
@@ -590,7 +590,7 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 - (void)setSelectedSegmentIndex:(NSInteger)selectedSegmentIndex animated:(BOOL)animated {
 #if DEBUG
     NSParameterAssert(selectedSegmentIndex < self.numbersOfSegments && selectedSegmentIndex >= 0);
-#elif
+#else
     if (selectedSegmentIndex >= self.numbersOfSegments || selectedSegmentIndex < 0) { return; }
 #endif
     

@@ -454,24 +454,24 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 }
 
 - (void)dealloc {
-    [self.indicatorKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+    [_indicatorKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self removeObserver:self forKeyPath:obj context:ZHSegmentedControlObserverContext];
         }
     }];
-    [self.borderKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+    [_borderKVOProperties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self removeObserver:self forKeyPath:obj context:ZHSegmentedControlObserverContext];
         }
     }];
-    [self.kvoProperties enumerateObjectsUsingBlock:^(NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
+    [_kvoProperties enumerateObjectsUsingBlock:^(NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
         if ([self respondsToSelector:NSSelectorFromString(obj)]) {
             [self removeObserver:self forKeyPath:obj context:ZHSegmentedControlObserverContext];
         }
     }];
-    self.indicatorKVOProperties = nil;
-    self.borderKVOProperties = nil;
-    self.kvoProperties = nil;
+    _indicatorKVOProperties = nil;
+    _borderKVOProperties = nil;
+    _kvoProperties = nil;
 }
 
 - (ZHSegmentedControlType)type {
@@ -590,7 +590,7 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
 - (void)setSelectedSegmentIndex:(NSInteger)selectedSegmentIndex animated:(BOOL)animated {
 #if DEBUG
     NSParameterAssert(selectedSegmentIndex < self.numbersOfSegments && selectedSegmentIndex >= 0);
-#elif
+#else
     if (selectedSegmentIndex >= self.numbersOfSegments || selectedSegmentIndex < 0) { return; }
 #endif
     
