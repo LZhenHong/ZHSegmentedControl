@@ -534,6 +534,8 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
     [super layoutSubviews];
     
     if (_first) {
+        [self.scrollView removeFromSuperview];
+        [self.buttons removeAllObjects];
         if (self.numbersOfSegments) {
             self.scrollView = [[UIScrollView alloc] init];
             self.scrollView.backgroundColor = [UIColor clearColor];
