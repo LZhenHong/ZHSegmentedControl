@@ -7,16 +7,27 @@ typedef NS_ENUM(NSUInteger, ZHSegmentedControlType) {
     ZHSegmentedControlTypeTextAndImage // Would be implemented someday. 😅😅
 };
 
+
+#pragma mark - ZHSegmentedButton
+
 @interface ZHSegmentedButton : UIButton
+
 @property (nonatomic, assign) ZHSegmentedControlSectionBorderStyle borderStyle;
 @property (nonatomic, strong) UIColor *borderColor;
 @property (nonatomic, assign) CGFloat borderWidth;
+
 - (void)resetButtonBorders;
+
 @end
+
 @interface ZHSegmentedButton ()
+
 @property (nonatomic, strong) NSArray<CALayer *> *layers;
+
 @end
+
 @implementation ZHSegmentedButton
+
 - (NSArray<CALayer *> *)layers {
     if (!_layers) {
         _layers = [NSArray arrayWithObjects:[CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], nil];
@@ -35,33 +46,41 @@ typedef NS_ENUM(NSUInteger, ZHSegmentedControlType) {
         obj.backgroundColor = self.borderColor.CGColor;
         
     }];
-    if (self.borderStyle == ZHSegmentedControlSectionBorderStyleNone) {
-        return;
-    }
+    
+    if (self.borderStyle == ZHSegmentedControlSectionBorderStyleNone) { return; }
+    
     if (self.borderStyle & ZHSegmentedControlSectionBorderStyleTop) {
         CALayer *topLayer = self.layers[0];
         topLayer.hidden = NO;
         topLayer.frame = CGRectMake(0.0, 0.0, self.bounds.size.width, self.borderWidth);
     }
+    
     if (self.borderStyle & ZHSegmentedControlSectionBorderStyleLeft) {
         CALayer *leftLayer = self.layers[1];
         leftLayer.hidden = NO;
         leftLayer.frame = CGRectMake(0.0, 0.0, self.borderWidth, self.bounds.size.height);
     }
+    
     if (self.borderStyle & ZHSegmentedControlSectionBorderStyleBottom) {
         CALayer *bottomLayer = self.layers[2];
         bottomLayer.hidden = NO;
         bottomLayer.frame = CGRectMake(0.0, self.bounds.size.height - self.borderWidth, self.bounds.size.width, self.borderWidth);
     }
+    
     if (self.borderStyle & ZHSegmentedControlSectionBorderStyleRight) {
         CALayer *rightLayer = self.layers[3];
         rightLayer.hidden = NO;
         rightLayer.frame = CGRectMake(self.bounds.size.width - self.borderWidth, 0.0, self.borderWidth, self.bounds.size.height);
     }
 }
+
 @end
 
+
+#pragma mark - ZHSegmentedControlIndicatorView
+
 @interface ZHSegmentedControlIndicatorView : UIView
+
 @property (nonatomic, readonly) NSInteger index;
 @property (nonatomic, readonly) NSInteger totalCount;
 @property (nonatomic, readonly) ZHSegmentedControlIndicatorPosition indicatorPosition;
@@ -70,20 +89,33 @@ typedef NS_ENUM(NSUInteger, ZHSegmentedControlType) {
 @property (nonatomic, strong) UIColor *indicatorColor;
 @property (nonatomic, strong) UIColor *boxColor;
 @property (nonatomic, strong) UIColor *selectedBoxColor;
+
 - (void)setSelectedIndex:(NSInteger)index animated:(BOOL)animated;
-- (instancetype)initWithStyle:(ZHSegmentedControlIndicatorStyle)style position:(ZHSegmentedControlIndicatorPosition)position height:(CGFloat)height count:(NSInteger)count;
+- (instancetype)initWithStyle:(ZHSegmentedControlIndicatorStyle)style
+                     position:(ZHSegmentedControlIndicatorPosition)position
+                       height:(CGFloat)height
+                        count:(NSInteger)count;
+
 @end
+
 @interface ZHSegmentedControlIndicatorView ()
+
 @property (nonatomic, strong) CAShapeLayer *indicatorLayer;
 @property (nonatomic, strong) CAShapeLayer *backgroundLayer;
+
 @end
+
 static const CGFloat kZHSegmentedControlArrowIndicatorDefaultHeight = 8.0f;
 static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
+
 @implementation ZHSegmentedControlIndicatorView {
     BOOL _first;
 }
 
-- (instancetype)initWithStyle:(ZHSegmentedControlIndicatorStyle)style position:(ZHSegmentedControlIndicatorPosition)position height:(CGFloat)height count:(NSInteger)count {
+- (instancetype)initWithStyle:(ZHSegmentedControlIndicatorStyle)style
+                     position:(ZHSegmentedControlIndicatorPosition)position
+                       height:(CGFloat)height
+                        count:(NSInteger)count {
     if (self = [super init]) {
         _indicatorStyle = style;
         _indicatorPosition = position;
@@ -290,7 +322,11 @@ static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
 
 @end
 
+
+#pragma mark - ZHSegmentedControl
+
 @interface ZHSegmentedControl ()
+
 @property (nonatomic, strong) NSMutableArray<ZHSegmentedButton *> *buttons;
 @property (nonatomic, strong) UIScrollView *scrollView;
 
@@ -302,6 +338,7 @@ static const CGFloat kZHSegmentedControlIndicatorMargin = 2.0f;
 @property (nonatomic, strong) NSSet<NSString *> *kvoProperties;
 @property (nonatomic, strong) NSSet<NSString *> *borderKVOProperties;
 @property (nonatomic, strong) NSSet<NSString *> *indicatorKVOProperties;
+
 @end
 
 static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverContext;
@@ -627,7 +664,9 @@ static void *ZHSegmentedControlObserverContext = &ZHSegmentedControlObserverCont
     } else if ([title isKindOfClass:[NSAttributedString class]]) {
         size = [(NSAttributedString *)title size];
     } else {
+#if DEBUG
         NSAssert(title == nil, @"Unexpected type of segment title: %@", [title class]);
+#endif
         size = CGSizeZero;
     }
     return CGRectIntegral((CGRect){CGPointZero, size}).size;
